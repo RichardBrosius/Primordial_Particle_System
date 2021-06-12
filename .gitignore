@@ -1,0 +1,6 @@
+venv/
+*~
+*.so
+build/
+.idea/
+temp_particle.py
