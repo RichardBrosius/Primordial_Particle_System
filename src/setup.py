@@ -6,5 +6,5 @@ from Cython.Build import cythonize
 
 setup(
       name = "ppsapp",
-      ext_modules = cythonize("part.pyx")              # our Cython source
+      ext_modules = cythonize("*.pyx")              # our Cython source
       )

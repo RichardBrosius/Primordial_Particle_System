@@ -13,10 +13,9 @@ cdef extern from "Particle.h" namespace "particles":
 
 
         void move(double dt)
-
-
         void orient(double dt)
+        double* position()
 
-        # double* sense(void)
+        int* sense(double** substrate)
 
 

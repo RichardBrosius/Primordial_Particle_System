@@ -27,8 +27,10 @@ namespace particles {
 
 
             void move(double dt);
+            double* position();
+
             void orient(double dt);
-            //int* sense(double** substrate);
+            int* sense(double ** substrate);
 
 
     };
