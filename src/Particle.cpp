@@ -24,8 +24,11 @@ namespace particles {
         this->color[1] = 0;   // Green
         this->color[2] = 255; // Blue
 
-        this->n_left = 0;
-        this->n_right = 0;
+        this->n_left_5 = 0;
+        this->n_right_5 = 0;
+        this->n_left_13 = 0;
+        this->n_right_13 = 0;
+
         this->alpha = 180;
         this->beta = 17;
         this->domain = 5;
@@ -44,8 +47,8 @@ namespace particles {
 
     void Particle::orient(double dt){
 
-        int sign_n = ((this->n_right - this->n_left) > 0 ) - ((this->n_right - this->n_left) < 0 );
-        double dphi_dt = this->alpha + this->beta * (this->n_right + this->n_left) * sign_n;
+        int sign_n = ((this->n_right_5 - this->n_left_5) > 0 ) - ((this->n_right_5 - this->n_left_5) < 0 );
+        double dphi_dt = this->alpha + this->beta * (this->n_right_5 + this->n_left_5) * sign_n;
         this->phi += dphi_dt * dt; 
     }
 
@@ -53,9 +56,10 @@ namespace particles {
         return this->pos;
     }
 
-   int* Particle::sense(double** substrate){
+   int* Particle::sense(double** substrate, int num_particles){
 
-       int n_particles = sizeof(substrate) / sizeof(substrate[0]);
+   
+       // std::cout << "There are " << num_particles << std::endl;
 
        int r = 0;
        int l = 0;
@@ -68,24 +72,34 @@ namespace particles {
         double ay = this->pos[1];
 
 
-       for(i=0; i < n_particles; i++)
+        double x = 0.0;
+        double y = 0.0;
+        double cp = 0.0;
+        int side = 0;
+        double dx = 0.0;
+        double dy = 0.0;
+        double distance = 0.0;
+        
+
+
+       for(i=0; i < num_particles; i++)
        {
 
-           double x = substrate[i][0];
-           double y = substrate[i][1];
+           x = substrate[i][0];
+           y = substrate[i][1];
 
            //std::cout << printf("x: %f ,y: %f \n", x,y);
 
-           std::cout << "x:" << x;
-           std::cout << "\t y:" << y << std::endl;
+           //std::cout << "x:" << x;
+           //std::cout << "\t y:" << y << std::endl;
 
-           double cp = (bx-ax)*(y-ay) - (by-ay)*(x-ax);
-           int side = (cp > 0) - (cp < 0);
+           cp = (bx-ax)*(y-ay) - (by-ay)*(x-ax);
+           side = (cp > 0) - (cp < 0);
 
-           double dx = ax - x;
-           double dy = ay - y;
+           dx = ax - x;
+           dy = ay - y;
            
-           double distance = sqrt( pow(dx, 2) + pow(dy, 2) );
+           distance = sqrt( pow(dx, 2) + pow(dy, 2) );
 
            if( side == 1 and distance <= this->domain )
            { r += 1;}
@@ -94,33 +108,35 @@ namespace particles {
 
        }
 
-        this->n_right = r;
-        this->n_left = l;
+        this->n_right_5 = r;
+        this->n_left_5 = l;
         int n = l + r;
 
         int scale = 1;
 
-        if( 3 * scale < n and n < 8 * scale){ 
-            this->color[0] = 0;
-            this->color[1] = 255;
-            this->color[2] = 0;
-        }
-        else if( 8 * scale < n and n < 12 * scale){ 
-            this->color[0] = 255;
-            this->color[1] = 165;
-            this->color[2] = 0;
-        }
-            else if( 12 * scale < n){ 
-            this->color[0] = 255;
-            this->color[1] = 0;
-            this->color[2] = 0;
-        }
 
-        int* lr_counts = new int[2];
-        lr_counts[0] = this->n_left;
-        lr_counts[1] = this->n_right;
+
+            if( 13 * scale < n and n < 15 * scale){ 
+                this->color[0] = 165;
+                this->color[1] = 42;
+                this->color[2] = 42;
+            }
+            else if( 15 * scale < n and n < 35 * scale){ 
+                this->color[0] = 0;
+                this->color[1] = 0;
+                this->color[2] = 255;
+            }
+                else if( 35 * scale < n){ 
+                this->color[0] = 255;
+                this->color[1] = 255;
+                this->color[2] = 0;
+            }
+
+        int* lr_counts_5 = new int[2];
+        lr_counts_5[0] = this->n_left_5;
+        lr_counts_5[1] = this->n_right_5;
         
-        return lr_counts;
+        return lr_counts_5;
        
 
    }

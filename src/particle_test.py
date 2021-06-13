@@ -24,14 +24,14 @@ def main_test():
 
     # print('Ending Substrate \n', substrate)
 
-    print(man)
-    print(part)
     m1 = man.PyManager()
-    m1.initialize(2)
-    print(m1.getPositions())
-    print("Moving Particles")
+    m1.initialize(100)
+    m1.sense()
+    m1.orient(1)
     m1.move(1)
-    print(m1.getPositions())
+    positions = m1.getPositions()
+
+    
 
 if(__name__ == '__main__'):
     main_test()

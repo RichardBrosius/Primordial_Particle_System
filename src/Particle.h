@@ -15,8 +15,11 @@ namespace particles {
             double speed;
             int pid;
             //int* color = new int[3];
-            int n_left;
-            int n_right;
+            int n_left_5;
+            int n_right_5;
+            int n_left_13;
+            int n_right_13;
+
             double alpha;
             double beta;
             double domain;
@@ -30,7 +33,7 @@ namespace particles {
             double* position();
 
             void orient(double dt);
-            int* sense(double ** substrate);
+            int* sense(double ** substrate, int num_particles);
 
 
     };

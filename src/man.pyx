@@ -12,8 +12,8 @@ cdef class PyManager:
         self.c_part = Manager()
 
 
-    def initialize(self, int n_particles):
-        self.c_part.initialize(n_particles)
+    def initialize(self, int n_particles, int seed):
+        self.c_part.initialize(n_particles, seed)
         self.n_particles = n_particles
 
     def sense(self):
@@ -37,6 +37,18 @@ cdef class PyManager:
 
         return positions
 
+
+    def getColors(self):
+        cdef int** colors_ptr = self.c_part.get_colors()
+
+        positions = np.zeros((self.c_part.n_particles,3))
+
+        for i in range(0, self.c_part.n_particles):
+            positions[i][0] = colors_ptr[i][0]
+            positions[i][1] = colors_ptr[i][1]
+            positions[i][2] = colors_ptr[i][2]
+
+        return positions
 
 
 

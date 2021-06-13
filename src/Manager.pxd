@@ -10,8 +10,9 @@ cdef extern from "Manager.h" namespace "particles":
         # Particle* substrate
         int n_particles
 
-        void initialize(int n_particles)
+        void initialize(int n_particles, int seed)
         void sense()
         void move(double dt)
         void orient(double dt)
         double** get_positions()
+        int** get_colors()
