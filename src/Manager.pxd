@@ -12,6 +12,8 @@ cdef extern from "Manager.h" namespace "particles":
 
         void initialize(int n_particles, int seed)
         void sense()
+        void free_positions()
+        void free_colors()
         void move(double dt)
         void orient(double dt)
         double** get_positions()

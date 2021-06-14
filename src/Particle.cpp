@@ -10,7 +10,7 @@ namespace particles {
 
     Particle::Particle (int pid, double* position, double speed, double phi) {
 
-
+        //std::cout << "In particle constructor" << std::endl;
         this->pos = new double[2];
         this->pos[0] = position[0]; // x coord
         this->pos[1] = position[1]; // y coord
@@ -58,12 +58,11 @@ namespace particles {
 
    int* Particle::sense(double** substrate, int num_particles){
 
-   
-       // std::cout << "There are " << num_particles << std::endl;
 
        int r = 0;
        int l = 0;
        int i = 0;
+       int n_13 = 0;
 
         double bx = this->pos[0] + this->domain * cos(this->phi * M_PI / 180);
         double by = this->pos[1] + this->domain * sin(this->phi * M_PI / 180);
@@ -106,31 +105,55 @@ namespace particles {
            else if ( side == -1 and distance <= this->domain)
            { l += 1;}
 
+           if( distance < 1.3)
+           {
+               n_13++;
+           }
+
+
        }
 
         this->n_right_5 = r;
         this->n_left_5 = l;
-        int n = l + r;
+        int n_5 = l + r;
+        //std::cout << n << std::endl;
+
 
         int scale = 1;
 
 
+        if (n_5 < 13 * scale and n_13 <= 15){
+            // Green
+            this->color[0] = 0;
+            this->color[1] = 255;
+            this->color[2] = 0;
+        }
+        else if( 13 * scale < n_5 and n_5 < 15 * scale){ 
+            // Brown
+            this->color[0] = 165;
+            this->color[1] = 42;
+            this->color[2] = 42;
+        }
+        else if( 15 * scale < n_5 and n_5 < 35 * scale){ 
+            // Blue
+            this->color[0] = 0;
+            this->color[1] = 0;
+            this->color[2] = 255;
+        }
+        else if( 35 * scale < n_5){ 
+            // Yellow
+            this->color[0] = 255;
+            this->color[1] = 255;
+            this->color[2] = 0;
+        }
+        else if(n_13 > 15)
+        {
+            // Magenta
+            this->color[0] = 255;
+            this->color[1] = 0;
+            this->color[2] = 255;
+        }
 
-            if( 13 * scale < n and n < 15 * scale){ 
-                this->color[0] = 165;
-                this->color[1] = 42;
-                this->color[2] = 42;
-            }
-            else if( 15 * scale < n and n < 35 * scale){ 
-                this->color[0] = 0;
-                this->color[1] = 0;
-                this->color[2] = 255;
-            }
-                else if( 35 * scale < n){ 
-                this->color[0] = 255;
-                this->color[1] = 255;
-                this->color[2] = 0;
-            }
 
         int* lr_counts_5 = new int[2];
         lr_counts_5[0] = this->n_left_5;

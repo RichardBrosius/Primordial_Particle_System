@@ -34,6 +34,7 @@ cdef class PyManager:
             positions[i][0] = positions_ptr[i][0]
             positions[i][1] = positions_ptr[i][1]
 
+        self.c_part.free_positions()
 
         return positions
 
@@ -41,14 +42,17 @@ cdef class PyManager:
     def getColors(self):
         cdef int** colors_ptr = self.c_part.get_colors()
 
-        positions = np.zeros((self.c_part.n_particles,3))
+        colors = np.zeros((self.c_part.n_particles,3))
 
         for i in range(0, self.c_part.n_particles):
-            positions[i][0] = colors_ptr[i][0]
-            positions[i][1] = colors_ptr[i][1]
-            positions[i][2] = colors_ptr[i][2]
+            colors[i][0] = colors_ptr[i][0]
+            colors[i][1] = colors_ptr[i][1]
+            colors[i][2] = colors_ptr[i][2]
+    
+        self.c_part.free_colors()
 
-        return positions
+        return colors
+
 
 
 

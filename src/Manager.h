@@ -16,9 +16,13 @@ namespace particles {
     void orient(double dt);
     double** get_positions(void);
     int** get_colors(void);
+    void free_positions(void);
+    void free_colors(void);
 
     int n_particles;
     Particle* substrate;
+    double** positions_ptr;
+    int** colors_ptr;
 
 
 
