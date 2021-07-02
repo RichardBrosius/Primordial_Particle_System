@@ -1,8 +1,12 @@
 #include "Manager.h"
 // https://stackoverflow.com/questions/13026523/undefined-symbol-error-importing-cython-module
+
+// Must be added when used in cython
 #include "Particle.cpp"
-#include "Sthread.h"
 #include "Sthread.cpp"
+
+
+#include "Sthread.h"
 #include <stdlib.h>
 #include <thread>
 
@@ -19,6 +23,8 @@ namespace particles {
     }
 
     Manager::~Manager(){   
+        // delete[] this->substrate;
+    
     }
 
     void Manager::initialize(int n_particles, int seed){
@@ -107,48 +113,47 @@ namespace particles {
 
     }
 
-    double** Manager::get_positions(void){
+    double* Manager::get_positions(void){
 
         int rows = this->n_particles, cols = 2;
-        positions_ptr = new double*[rows];
+        positions_ptr = new double[rows * cols];
         for(int i = 0; i < rows; ++i){
-            positions_ptr[i] = new double[cols];
-            positions_ptr[i][0] = (this->substrate[i]).position()[0];
-            positions_ptr[i][1] = (this->substrate[i]).position()[1];
+            positions_ptr[cols*i] = (this->substrate[i]).position()[0];
+            positions_ptr[cols*i+1] = (this->substrate[i]).position()[1];
             // std::cout << "x: " << positions[i][0] << "\ty: " << positions[i][1] << std::endl;
         }
 
         return positions_ptr;
     }
 
-    int** Manager::get_colors(void){
+    int* Manager::get_colors(void){
 
         int rows = this->n_particles, cols = 3;
-        this->colors_ptr = new int*[rows];
+        this->colors_ptr = new int[rows * cols];
         for(int i = 0; i < rows; ++i){
-            colors_ptr[i] = new int[cols];
-            colors_ptr[i][0] = (this->substrate[i]).color[0];
-            colors_ptr[i][1] = (this->substrate[i]).color[1];
-            colors_ptr[i][2] = (this->substrate[i]).color[2];
-
+                colors_ptr[cols*i] = (this->substrate[i]).color[0];
+                colors_ptr[cols*i+1] = (this->substrate[i]).color[1];
+                colors_ptr[cols*i+2] = (this->substrate[i]).color[2];
          }
         
         return colors_ptr;
     }
 
     void Manager::free_positions(void){
-        for(int i = 0; i < this->n_particles; ++i){
-            delete[] positions_ptr[i];
-        }
-
+        // for(int i = 0; i < this->n_particles; ++i){
+        //     delete[] positions_ptr[i];
+        // }
+        delete[] positions_ptr;
+        positions_ptr = NULL;
     }
 
     void Manager::free_colors(void){
-        for(int i = 0; i < this->n_particles; ++i){
-            delete[] colors_ptr[i];
+        // for(int i = 0; i < this->n_particles; ++i){
+        //     delete[] colors_ptr[i];
 
-        }
-
+        // }
+        delete[] colors_ptr;
+        colors_ptr = NULL;
     }
 
 

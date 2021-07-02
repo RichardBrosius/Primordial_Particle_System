@@ -33,7 +33,7 @@ namespace particles {
             double* position();
 
             void orient(double dt);
-            int* sense(double ** substrate, int num_particles);
+            void sense(double ** substrate, int num_particles);
 
 
     };

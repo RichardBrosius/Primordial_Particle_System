@@ -33,11 +33,23 @@ namespace particles {
         this->beta = 17;
         this->domain = 5;
 
+        // delete[] position; // new
+        
+        // 16,000 bytes in 1,000 blocks are definitely lost in loss record 2 of 4
+        // ==4262==    at 0x4C3289F: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+        // ==4262==    by 0x1092C9: particles::Manager::initialize(int, int) (Manager.cpp:34)
+        // ==4262==    by 0x109073: main (memtest.cpp:10)
+
+
+
+
+
     }
 
     Particle::~Particle() {
 
         //delete[] this->color;
+        //delete[] this->pos;
     }
 
     void Particle::move(double dt){
@@ -56,7 +68,7 @@ namespace particles {
         return this->pos;
     }
 
-   int* Particle::sense(double** substrate, int num_particles){
+   void Particle::sense(double** substrate, int num_particles){
 
 
        int r = 0;
@@ -155,11 +167,10 @@ namespace particles {
         }
 
 
-        int* lr_counts_5 = new int[2];
-        lr_counts_5[0] = this->n_left_5;
-        lr_counts_5[1] = this->n_right_5;
+        // int* lr_counts_5 = new int[2];
+        // lr_counts_5[0] = this->n_left_5;
+        // lr_counts_5[1] = this->n_right_5;
         
-        return lr_counts_5;
        
 
    }

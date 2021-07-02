@@ -14,12 +14,9 @@ class Particle;
     {
 
             
-            //std::cout << "Hellow from thread: " << start << ":" << end << std::endl;
-            int interval = end - start;
 
             double** positions = new double* [n_particles];
             double* position = new double[2];
-            int* result = new int[2];
 
             for(int i=0; i < n_particles; i++){
                 positions[i] = new double[2];
@@ -30,16 +27,13 @@ class Particle;
             }
 
             for(int i=start; i < end; i++){
-                result = (substrate[i]).sense(positions, n_particles);
-                //std::cout << result[0] << "," << result[1] << std::endl;
+                (substrate[i]).sense(positions, n_particles);
             }
     
             for(int i = 0; i < n_particles; i++){
                 delete[] positions[i];
             }
-
-            // delete[] position;
-            // delete[] result;
+            delete positions;
 
 
     }

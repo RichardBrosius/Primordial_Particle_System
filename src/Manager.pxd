@@ -16,5 +16,5 @@ cdef extern from "Manager.h" namespace "particles":
         void free_colors()
         void move(double dt)
         void orient(double dt)
-        double** get_positions()
-        int** get_colors()
+        double* get_positions()
+        int* get_colors()

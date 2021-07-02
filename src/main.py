@@ -55,7 +55,7 @@ def main():
 
 
         pygame.display.update()
-        clock.tick(30)
+        clock.tick(180)
 
 
         start = time.time()
@@ -66,6 +66,7 @@ def main():
         m1.orient(1)
         m1.move(1)
         start = time.time()
+        #if(t == 0):
         positions = m1.getPositions()
         end = time.time()
         position_times.append(end-start)
@@ -73,16 +74,17 @@ def main():
         colors = m1.getColors()
         textsurface = myfont.render('Timestep: {}'.format(t), False, (255,0,0))
 
-        if( t % 1 == 0):
-            pass
+        if( t % 1 == 0 ):
             window.fill((0, 0, 0))
             window.blit(textsurface, (50,10))
 
+            #print(colors)
+            #print(positions)
             start = time.time()
+            #print(positions)
             for color, position in zip(colors, positions):    
                 pygame.draw.circle(window, color, np.add(offset, np.multiply(scale, position)), r_disp, 2)
                 #pygame.draw.line(window, color, scale * position, np.add(np.multiply(scale, position), norm))
-                pass
             end = time.time()
 
             graphics_times.append(end - start)

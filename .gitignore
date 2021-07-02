@@ -4,3 +4,7 @@ venv/
 build/
 .idea/
 temp_particle.py
+10K_holdout_sense_only.png 10K_iterations_full_func.png 15K_get_col_pos_only.png mem-graph_fix1.png mem-graph.png
+10K_holdout_sense_only.log 10K_iterations_full_func.log 15K_get_col_pos_only.log fix1.log mem.log
+*.png
+*.log
