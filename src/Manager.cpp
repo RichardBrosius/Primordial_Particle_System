@@ -50,49 +50,40 @@ namespace particles {
 
     void Manager::sense(void){
 
+        int NUM_CORES = 8;
+        int divisions[ NUM_CORES + 1];
 
-        // SThread t1 = SThread();
-
-        // t1(this->substrate, this->n_particles, 0, 1000);
-
-        std::thread th1(SThread(), this->substrate, this->n_particles, 0, 625);
-        std::thread th2(SThread(), this->substrate, this->n_particles, 625, 1250);
-        std::thread th3(SThread(), this->substrate, this->n_particles, 1250, 1875);
-        std::thread th4(SThread(), this->substrate, this->n_particles, 1875, 2500);
-        std::thread th5(SThread(), this->substrate, this->n_particles, 2500, 3125);
-        std::thread th6(SThread(), this->substrate, this->n_particles, 3125, 3750);
-        std::thread th7(SThread(), this->substrate, this->n_particles, 3750, 4375);
-        std::thread th8(SThread(), this->substrate, this->n_particles, 4375, 5000);
+        int division = this->n_particles / NUM_CORES;
+        int remainder = this->n_particles % NUM_CORES;
 
 
-        th1.join();
-        th2.join();
-        th3.join();
-        th4.join();
-        th5.join();
-        th6.join();
-        th7.join();
-        th8.join();
+        // Split the particles into equal group to be run on seperate threads
+
+        for( int i=0; i <= NUM_CORES + 1; ++i){
+            divisions[i] = i * division;
+        }
+    
+        for(int i = 0; i < NUM_CORES; i++)
+        {   
+            if( i < remainder )
+            {   divisions[i + 1] += i;}
+            else if ( i >= remainder and i < NUM_CORES)
+            {   divisions[i+1] += remainder;    }
+        }
 
 
 
-        // double** positions = new double* [this->n_particles];
-        // double* position = new double[2];
-        // int* result = new int[2];
+        std::thread threads[NUM_CORES];
 
-        // for(int i=0; i < n_particles; i++){
-        //     positions[i] = new double[2];
-        //     position = (this->substrate[i]).position();
+        for(int thread=0; thread<NUM_CORES; ++thread)
+        {
+            threads[thread] = std::thread(SThread(), this->substrate, this->n_particles, divisions[thread], divisions[thread + 1]);
+        }
 
-        //     positions[i][0] = position[0];
-        //     positions[i][1] = position[1];
-        // }
-
-        // for(int i=0; i < n_particles; i++){
-        //     result = (this->substrate[i]).sense(positions, this->n_particles);
-        //     //std::cout << result[0] << "," << result[1] << std::endl;
-        // }
-   
+        for(int i=0; i<NUM_CORES; ++i)
+        {
+            threads[i].join();
+        }
 
     }
     
