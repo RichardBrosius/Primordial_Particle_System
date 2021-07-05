@@ -20,7 +20,7 @@ class Particle;
 
             for(int i=0; i < n_particles; i++){
                 positions[i] = new double[2];
-                position = (substrate[i]).position();
+                position = (substrate[i]).get_position();
 
                 positions[i][0] = position[0];
                 positions[i][1] = position[1];

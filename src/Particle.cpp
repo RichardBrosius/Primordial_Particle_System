@@ -1,16 +1,19 @@
 #include "Particle.h"
 #include "math.h"
 #include <iostream>
+#include <string>
 
 namespace particles {
 
     // Default constructor
-    Particle::Particle () {}
+    Particle::Particle () {
+        this->color_category = 'U';
+
+    }
 
 
     Particle::Particle (int pid, double* position, double speed, double phi) {
 
-        //std::cout << "In particle constructor" << std::endl;
         this->pos = new double[2];
         this->pos[0] = position[0]; // x coord
         this->pos[1] = position[1]; // y coord
@@ -33,28 +36,27 @@ namespace particles {
         this->beta = 17;
         this->domain = 5;
 
-        // delete[] position; // new
-        
-        // 16,000 bytes in 1,000 blocks are definitely lost in loss record 2 of 4
-        // ==4262==    at 0x4C3289F: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
-        // ==4262==    by 0x1092C9: particles::Manager::initialize(int, int) (Manager.cpp:34)
-        // ==4262==    by 0x109073: main (memtest.cpp:10)
-
-
-
-
-
     }
 
     Particle::~Particle() {
 
-        //delete[] this->color;
-        //delete[] this->pos;
+        delete[] this->color;
+        delete[] this->pos;
     }
 
     void Particle::move(double dt){
         this->pos[0] += cos(this->phi * M_PI / 180) * dt;
         this->pos[1] += sin(this->phi * M_PI / 180) * dt;
+
+        // https://torstencurdt.com/tech/posts/modulo-of-negative-numbers/
+        this->pos[0] = fmod(fmod(this->pos[0], 250) + 250 , 250);
+        this->pos[1] = fmod(fmod(this->pos[1], 250) + 250,  250);
+
+        if( this->pos[0] > 250.0 or this->pos[0] < 0)
+        {
+            std::cout << this->pos[0] << ',' << this->pos[1] << std::endl;
+        }
+
     }
 
     void Particle::orient(double dt){
@@ -64,7 +66,18 @@ namespace particles {
         this->phi += dphi_dt * dt; 
     }
 
-    double* Particle::position(void){
+
+    double* Particle::get_color(void){
+        return this->color;
+
+    }
+
+    std::string Particle::get_color_category(void)
+    {
+        return this->color_category;
+    }
+
+    double* Particle::get_position(void){
         return this->pos;
     }
 
@@ -99,11 +112,6 @@ namespace particles {
            x = substrate[i][0];
            y = substrate[i][1];
 
-           //std::cout << printf("x: %f ,y: %f \n", x,y);
-
-           //std::cout << "x:" << x;
-           //std::cout << "\t y:" << y << std::endl;
-
            cp = (bx-ax)*(y-ay) - (by-ay)*(x-ax);
            side = (cp > 0) - (cp < 0);
 
@@ -128,50 +136,50 @@ namespace particles {
         this->n_right_5 = r;
         this->n_left_5 = l;
         int n_5 = l + r;
-        //std::cout << n << std::endl;
 
 
         int scale = 1;
 
 
-        if (n_5 < 13 * scale and n_13 <= 15){
-            // Green
-            this->color[0] = 0;
-            this->color[1] = 255;
-            this->color[2] = 0;
-        }
-        else if( 13 * scale < n_5 and n_5 < 15 * scale){ 
-            // Brown
-            this->color[0] = 165;
-            this->color[1] = 42;
-            this->color[2] = 42;
-        }
-        else if( 15 * scale < n_5 and n_5 < 35 * scale){ 
+        if( 15 * scale < n_5 and n_5 <= 35 * scale){ 
             // Blue
             this->color[0] = 0;
             this->color[1] = 0;
             this->color[2] = 255;
+            this->color_category = "Blue";
         }
         else if( 35 * scale < n_5){ 
             // Yellow
             this->color[0] = 255;
             this->color[1] = 255;
             this->color[2] = 0;
+            this->color_category = "Yellow";
         }
+
+        else if( 13 * scale <= n_5 and n_5 <= 15 * scale){ 
+            // Brown
+            this->color[0] = 165;
+            this->color[1] = 42;
+            this->color[2] = 42;
+            this->color_category = "Brown";
+        }
+
         else if(n_13 > 15)
         {
             // Magenta
             this->color[0] = 255;
             this->color[1] = 0;
             this->color[2] = 255;
+            this->color_category = "Magenta";
         }
 
-
-        // int* lr_counts_5 = new int[2];
-        // lr_counts_5[0] = this->n_left_5;
-        // lr_counts_5[1] = this->n_right_5;
-        
-       
+        else{
+            // Green
+            this->color[0] = 0;
+            this->color[1] = 255;
+            this->color[2] = 0;
+            this->color_category = "Green";
+        }
 
    }
 

@@ -9,8 +9,10 @@
 #include "Sthread.h"
 #include <stdlib.h>
 #include <thread>
-
-
+#include <vector>
+#include<math.h>
+#include<string>
+#include <iostream>
 
 
 
@@ -18,26 +20,39 @@ namespace particles {
 
     class Particle;
 
+
+
     Manager::Manager(){
+        std::vector<double> gpd[10]; // Green Particle Density
+    }
+
+    Manager::Manager(int x_size, int y_size){
+        std::vector<double> gpd[10]; // Green Particle Density
+        this->x_size = x_size;
+        this->y_size = y_size;
 
     }
 
-    Manager::~Manager(){   
+    Manager::~Manager(){
         // delete[] this->substrate;
-    
+
     }
 
     void Manager::initialize(int n_particles, int seed){
+
+
+        int MAX_PARTICLES = 10000;
+
         this->n_particles = n_particles;
-        this->substrate = new Particle[n_particles];
+        this->substrate = new Particle[MAX_PARTICLES];
         double* p1_pos;
 
         srand(seed);
 
         for(int i = 0; i < n_particles; i++){
             p1_pos = new double[2];
-            p1_pos[0] = (rand() % 250) / 1;
-            p1_pos[1] = (rand() % 250) / 1;
+            p1_pos[0] = (rand() % this->x_size) / 1;
+            p1_pos[1] = (rand() % this->y_size) / 1;
             Particle* p1 = new Particle(i, p1_pos, .67, rand() % 360);
 
             this->substrate[i] = *p1;
@@ -46,9 +61,90 @@ namespace particles {
 
     }
 
-    
+
+
+    void Manager::create_particles(int n_particles){
+
+        int n_particles_old = this->n_particles;
+        this->n_particles += n_particles;
+        double* p1_pos;
+
+        for(int i = n_particles_old - 1; i < this->n_particles; i++){
+            p1_pos = new double[2];
+            p1_pos[0] = (rand() % this->x_size) / 1;
+            p1_pos[1] = (rand() % this->y_size) / 1;
+
+            Particle* p1 = new Particle(i, p1_pos, .67, rand() % 360);
+            //std::cout << "New Particle ID is " << std::endl;
+            //std::cout << p1->pid << std::endl;
+            this->substrate[i] = *p1;
+
+        }
+
+
+
+    }
+
+
+    int Manager::regulate(int t, double target_density){
+
+        // Calculate density
+        double* pos;
+        std::string color;
+        int inbounds_particle_count = 0;
+        x_size = this->x_size;
+        y_size = this->y_size;
+
+        for(int i = 0; i < this->n_particles; ++i)
+        {
+            pos = (this->substrate[i]).get_position();
+            color = (this->substrate[i]).get_color_category();
+
+            if( pos[0] >= 0 and pos[0] <= x_size and pos[1] >= 0 and pos[1] <= y_size) // and color == "Green")
+            //if( color == "Green")
+            {++inbounds_particle_count;}
+        }
+
+        // Since the area of the inbounds region remains constant it is sufficient to just track the number of particles
+        double density = static_cast<double>(inbounds_particle_count) / static_cast<double>( x_size * y_size);
+        (this->gpd)->push_back(density);
+
+        if(this->gpd->size() > 10){
+            this->gpd->erase(this->gpd->begin());
+        }
+
+        // Calculate the average of the last 10 iterations
+        double accumulated_density = 0;
+        for( auto it = this->gpd->begin(); it != this->gpd->end(); ++it)
+        {
+            accumulated_density += *it;
+        }
+
+        double density_ma = accumulated_density / 10.0;
+        int particles_to_add = 0;
+
+
+        if( t % 100 ==  0 ) 
+        {
+            std::cout << density_ma << " " << this->n_particles << std::endl;
+
+        }
+ 
+        if( density_ma < target_density)
+        {
+            double delta = abs(density_ma - target_density) +  t * (target_density - density_ma ) ;
+            particles_to_add = static_cast<int> (delta * (this->n_particles)) / 3;
+            std::cout << density_ma << " " << delta << " " << this->n_particles << " " << particles_to_add << std::endl;
+
+        }
+
+
+        return particles_to_add;
+
+    }
 
     void Manager::sense(void){
+
 
         int NUM_CORES = 8;
         int divisions[ NUM_CORES + 1];
@@ -62,15 +158,14 @@ namespace particles {
         for( int i=0; i <= NUM_CORES + 1; ++i){
             divisions[i] = i * division;
         }
-    
+
         for(int i = 0; i < NUM_CORES; i++)
-        {   
+        {
             if( i < remainder )
             {   divisions[i + 1] += i;}
             else if ( i >= remainder and i < NUM_CORES)
             {   divisions[i+1] += remainder;    }
         }
-
 
 
         std::thread threads[NUM_CORES];
@@ -80,13 +175,16 @@ namespace particles {
             threads[thread] = std::thread(SThread(), this->substrate, this->n_particles, divisions[thread], divisions[thread + 1]);
         }
 
+
         for(int i=0; i<NUM_CORES; ++i)
         {
             threads[i].join();
         }
 
+
+
     }
-    
+
     void Manager::move(double dt){
         for(int i=0; i < this->n_particles; i++)
         {
@@ -109,9 +207,8 @@ namespace particles {
         int rows = this->n_particles, cols = 2;
         positions_ptr = new double[rows * cols];
         for(int i = 0; i < rows; ++i){
-            positions_ptr[cols*i] = (this->substrate[i]).position()[0];
-            positions_ptr[cols*i+1] = (this->substrate[i]).position()[1];
-            // std::cout << "x: " << positions[i][0] << "\ty: " << positions[i][1] << std::endl;
+            positions_ptr[cols*i] = (this->substrate[i]).get_position()[0];
+            positions_ptr[cols*i+1] = (this->substrate[i]).get_position()[1];
         }
 
         return positions_ptr;
@@ -121,12 +218,15 @@ namespace particles {
 
         int rows = this->n_particles, cols = 3;
         this->colors_ptr = new int[rows * cols];
+        double* color;
+
         for(int i = 0; i < rows; ++i){
-                colors_ptr[cols*i] = (this->substrate[i]).color[0];
-                colors_ptr[cols*i+1] = (this->substrate[i]).color[1];
-                colors_ptr[cols*i+2] = (this->substrate[i]).color[2];
+                color = (this->substrate[i]).get_color();
+                colors_ptr[cols*i] = color[0];
+                colors_ptr[cols*i+1] = color[1];
+                colors_ptr[cols*i+2] = color[2];
          }
-        
+
         return colors_ptr;
     }
 

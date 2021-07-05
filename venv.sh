@@ -1,6 +1,6 @@
 #/bin/bash
 
-virtualenv venv 
+virtualenv venv --python=/home/rich/anaconda3/envs/py39/bin/python
 
 if source venv/bin/activate;
 then pip install PyOpenGL PyOpenGL_accelerate

@@ -1,6 +1,8 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include <string>
+
 namespace particles {
     class Particle {
         public:
@@ -27,10 +29,12 @@ namespace particles {
             double* color;
 
             int x0, x1, y0, y1;
-
+            std::string color_category;
 
             void move(double dt);
-            double* position();
+            double* get_position();
+            double* get_color();
+            std::string get_color_category();
 
             void orient(double dt);
             void sense(double ** substrate, int num_particles);

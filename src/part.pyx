@@ -23,7 +23,7 @@ cdef class PyParticle:
         self.c_part.orient(dt)
 
     def position(self):
-        cdef double[2] pos = self.c_part.position()
+        cdef double[2] pos = self.c_part.get_position()
         return pos
 
 

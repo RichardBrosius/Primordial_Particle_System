@@ -6,6 +6,7 @@ cdef extern from "Manager.cpp":
 
 cdef extern from "Manager.h" namespace "particles":
     cdef cppclass Manager:
+        Manager(int x_size, int y_size) except + 
         Manager() except + 
         # Particle* substrate
         int n_particles
@@ -18,3 +19,5 @@ cdef extern from "Manager.h" namespace "particles":
         void orient(double dt)
         double* get_positions()
         int* get_colors()
+        int regulate(int t, double target_density)
+        void create_particles(int n_particles)

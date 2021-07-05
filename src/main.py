@@ -15,38 +15,24 @@ def main():
 
 
     pygame.init()
-    
     window = pygame.display.set_mode((1000,1000))
-    
     pygame.display.set_caption('PPS Sim')
     clock = pygame.time.Clock()
 
     quit_flag = False
 
-    substrate = []
-    pid = 0
-
-    #input("wait")
-
-
-    m1 = man.PyManager()
-    m1.initialize(5000, 93)
-
-
+    xsize = 250
+    ysize = 250
     t = 0
     dt = 1
-    scale =  2.5
-    r_disp = 4
-    offset = (100, 100)
-
+    scale =  3.5
+    r_disp = 4.0
+    offset = (50, 50)
+    m1 = man.PyManager(xsize, ysize)
+    m1.initialize(5000, 602) 
 
     pygame.font.init()
     myfont = pygame.font.SysFont('Comic Sans MS', 30)
-
-
-    sense_times = []
-    position_times = []
-    graphics_times = []
 
     while not quit_flag:
         for event in pygame.event.get():
@@ -58,43 +44,34 @@ def main():
         clock.tick(180)
 
 
-        start = time.time()
         m1.sense()
-        end = time.time()
-        sense_times.append(end-start)
-
         m1.orient(1)
         m1.move(1)
-        start = time.time()
-        #if(t == 0):
         positions = m1.getPositions()
-        end = time.time()
-        position_times.append(end-start)
-
         colors = m1.getColors()
+        #particles_to_add = m1.regulate(t, .06)
+        particles_to_add = 0
+        if(particles_to_add != 0):
+            print("time:{} creating {} particles".format(t, particles_to_add))
+            m1.create_particles(particles_to_add)
+        
         textsurface = myfont.render('Timestep: {}'.format(t), False, (255,0,0))
 
         if( t % 1 == 0 ):
             window.fill((0, 0, 0))
             window.blit(textsurface, (50,10))
 
-            #print(colors)
-            #print(positions)
             start = time.time()
-            #print(positions)
+
+            ul = np.add(offset, np.multiply(scale, np.array((0,0))))
+            lr = np.add(0, np.multiply(scale, np.array((xsize,ysize))))
+            rect_coords = (ul[0], ul[1], lr[0], lr[1])
+
+            pygame.draw.rect(window, (255,255,255) , rect_coords, 2)
             for color, position in zip(colors, positions):    
                 pygame.draw.circle(window, color, np.add(offset, np.multiply(scale, position)), r_disp, 2)
-                #pygame.draw.line(window, color, scale * position, np.add(np.multiply(scale, position), norm))
-            end = time.time()
 
-            graphics_times.append(end - start)
         t+=dt;     
-
-
-    print('Sense: avg {}, \t std {}'.format(np.average(sense_times), np.std(sense_times)))
-    print('Position: avg {}, \t std {}'.format(np.average(position_times), np.std(position_times)))
-    print('Graphics: avg {}, \t std {}'.format(np.average(graphics_times), np.std(graphics_times)))
-
 
     pygame.quit()
     quit()

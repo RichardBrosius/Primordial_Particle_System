@@ -11,8 +11,12 @@ cdef class PyManager:
     cdef Manager c_part
     cdef int n_particles
 
+
     def __cinit__(self):
         self.c_part = Manager()
+
+    def __cinit__(self, int x_size, int y_size):
+        self.c_part = Manager(x_size, y_size)
 
 
     def initialize(self, int n_particles, int seed):
@@ -80,6 +84,11 @@ cdef class PyManager:
         return colors
 
 
+    def regulate(self, int t,  double target_density):
+        cdef int particles_to_add = self.c_part.regulate(t, target_density)
+        return particles_to_add
 
 
- 
+    def create_particles(self, int n_particles):
+        self.c_part.create_particles(n_particles)
+    
