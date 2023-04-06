@@ -8,7 +8,7 @@ namespace particles {
         public:
 
             Particle();
-            Particle(int pid, double* pos, double speed, double phi);
+            Particle(int pid, double* pos, int x_size, int y_size, double speed, double phi);
             //Particle(int x0, int y0, int x1, int y1);
             ~Particle();
 
@@ -21,6 +21,8 @@ namespace particles {
             int n_right_5;
             int n_left_13;
             int n_right_13;
+            int x_size;
+            int y_size;
 
             double alpha;
             double beta;

@@ -8,7 +8,7 @@ cdef extern from "Particle.h" namespace "particles":
         #Particle(int, int, int, int) except +
 
 
-        Particle(int , double* , double, double) except +
+        Particle(int , double* , int, int, double, double) except +
         #~Particle()
 
 

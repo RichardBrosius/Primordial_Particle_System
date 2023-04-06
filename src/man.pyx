@@ -23,8 +23,8 @@ cdef class PyManager:
         self.c_part.initialize(n_particles, seed)
         self.n_particles = n_particles
 
-    def sense(self):
-        self.c_part.sense()
+    def sense(self, int NUM_CORES = 1):
+        self.c_part.sense(NUM_CORES)
 
     def move(self, double dt):
         self.c_part.move(dt)
@@ -89,6 +89,21 @@ cdef class PyManager:
         return particles_to_add
 
 
-    def create_particles(self, int n_particles):
-        self.c_part.create_particles(n_particles)
+    def create_particles(self, int n_particle, int x, int y, int x_size, int y_size):
+        self.c_part.create_particles(n_particle, x, y, x_size, y_size)
     
+    def count_types(self):
+        cdef int* types_ptr = self.c_part.count_types()
+
+        types = []
+        types.append(types_ptr[0])
+        types.append(types_ptr[1])
+        types.append(types_ptr[2])
+        types.append(types_ptr[3])
+        types.append(types_ptr[4])
+
+
+        free(types_ptr)
+
+
+        return types

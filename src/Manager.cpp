@@ -53,7 +53,7 @@ namespace particles {
             p1_pos = new double[2];
             p1_pos[0] = (rand() % this->x_size) / 1;
             p1_pos[1] = (rand() % this->y_size) / 1;
-            Particle* p1 = new Particle(i, p1_pos, .67, rand() % 360);
+            Particle* p1 = new Particle(i, p1_pos, x_size, y_size, .67, rand() % 360);
 
             this->substrate[i] = *p1;
 
@@ -63,7 +63,7 @@ namespace particles {
 
 
 
-    void Manager::create_particles(int n_particles){
+    void Manager::create_particles(int n_particles, int x, int y, int x_size, int y_size){
 
         int n_particles_old = this->n_particles;
         this->n_particles += n_particles;
@@ -71,10 +71,10 @@ namespace particles {
 
         for(int i = n_particles_old - 1; i < this->n_particles; i++){
             p1_pos = new double[2];
-            p1_pos[0] = (rand() % this->x_size) / 1;
-            p1_pos[1] = (rand() % this->y_size) / 1;
+            p1_pos[0] = x + (rand() % x_size) / 1;
+            p1_pos[1] = y + (rand() % y_size) / 1;
 
-            Particle* p1 = new Particle(i, p1_pos, .67, rand() % 360);
+            Particle* p1 = new Particle(i, p1_pos, this->x_size, this->y_size, .67, rand() % 360);
             //std::cout << "New Particle ID is " << std::endl;
             //std::cout << p1->pid << std::endl;
             this->substrate[i] = *p1;
@@ -143,10 +143,10 @@ namespace particles {
 
     }
 
-    void Manager::sense(void){
+    void Manager::sense(int NUM_CORES = 1){
 
 
-        int NUM_CORES = 8;
+        
         int divisions[ NUM_CORES + 1];
 
         int division = this->n_particles / NUM_CORES;
@@ -250,7 +250,44 @@ namespace particles {
 
 
 
-    }
+    int* Manager::count_types(void){
 
 
+        int* counts = new int[5];
 
+        counts[0] = 0;
+        counts[1] = 0;
+        counts[2] = 0;
+        counts[3] = 0;
+        counts[4] = 0;
+
+        std::string category;
+
+        int rows = this->n_particles;
+
+        for(int i=0; i < rows; ++i)
+        {
+            category = (this->substrate[i]).get_color_category();
+            //Spore
+            if( category == "Magenta")
+            {++(counts[0]);}
+            //Cells 
+            else if( category == "Blue" )
+            {++(counts[1]);}
+            //Yellow
+            else if( category == "Yellow")
+            {++(counts[2]);}
+            //Pre Spores 
+            else if( category == "Brown" )
+            {++(counts[3]);}
+            //Nutrients
+            else if(category == "Green")
+            {++(counts[4]);}
+
+        }
+
+        return counts;
+
+    }   
+    
+}

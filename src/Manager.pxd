@@ -12,7 +12,7 @@ cdef extern from "Manager.h" namespace "particles":
         int n_particles
 
         void initialize(int n_particles, int seed)
-        void sense()
+        void sense(int NUM_CORES)
         void free_positions()
         void free_colors()
         void move(double dt)
@@ -20,4 +20,5 @@ cdef extern from "Manager.h" namespace "particles":
         double* get_positions()
         int* get_colors()
         int regulate(int t, double target_density)
-        void create_particles(int n_particles)
+        void create_particles(int n_particle, int x, int y, int x_size, int y_size)
+        int* count_types()

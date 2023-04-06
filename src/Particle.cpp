@@ -8,15 +8,20 @@ namespace particles {
     // Default constructor
     Particle::Particle () {
         this->color_category = 'U';
+        this->x_size = 250;
+        this->y_size = 250;
 
     }
 
 
-    Particle::Particle (int pid, double* position, double speed, double phi) {
+    Particle::Particle (int pid, double* position, int x_size, int y_size,  double speed, double phi) {
 
         this->pos = new double[2];
         this->pos[0] = position[0]; // x coord
         this->pos[1] = position[1]; // y coord
+
+        this->x_size = x_size;
+        this->y_size = y_size;
 
         this->phi = phi;
         this->speed = speed;
@@ -49,8 +54,8 @@ namespace particles {
         this->pos[1] += sin(this->phi * M_PI / 180) * dt;
 
         // https://torstencurdt.com/tech/posts/modulo-of-negative-numbers/
-        this->pos[0] = fmod(fmod(this->pos[0], 250) + 250 , 250);
-        this->pos[1] = fmod(fmod(this->pos[1], 250) + 250,  250);
+        this->pos[0] = fmod(fmod(this->pos[0], this->x_size) + this->x_size , this->x_size);
+        this->pos[1] = fmod(fmod(this->pos[1], this->y_size) + this->y_size,  this->y_size);
 
         if( this->pos[0] > 250.0 or this->pos[0] < 0)
         {
@@ -141,7 +146,17 @@ namespace particles {
         int scale = 1;
 
 
-        if( 15 * scale < n_5 and n_5 <= 35 * scale){ 
+        if(n_13 > 15)
+        {
+            // Magenta
+            this->color[0] = 255;
+            this->color[1] = 0;
+            this->color[2] = 255;
+            this->color_category = "Magenta";
+        }
+
+
+        else if( 15 * scale < n_5 and n_5 <= 35 * scale){ 
             // Blue
             this->color[0] = 0;
             this->color[1] = 0;
@@ -162,15 +177,6 @@ namespace particles {
             this->color[1] = 42;
             this->color[2] = 42;
             this->color_category = "Brown";
-        }
-
-        else if(n_13 > 15)
-        {
-            // Magenta
-            this->color[0] = 255;
-            this->color[1] = 0;
-            this->color[2] = 255;
-            this->color_category = "Magenta";
         }
 
         else{
