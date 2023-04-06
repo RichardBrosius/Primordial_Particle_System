@@ -97,7 +97,7 @@ def main():
             for color, position in zip(colors, positions):
                 pygame.draw.circle(window, color, np.add(offset, np.multiply(scale, position)), r_disp, 2)
 
-        t+=dt;
+        t+=dt
 
 
     #log.close()
